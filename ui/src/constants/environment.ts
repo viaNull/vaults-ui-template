@@ -45,16 +45,8 @@ const Env: EnvironmentVariables = {
 
 // Spot markets
 export const SPOT_MARKETS_LOOKUP = CommonConfig.spotMarketsLookup;
-if (SPOT_MARKETS_LOOKUP[6]) {
-  SPOT_MARKETS_LOOKUP[6].symbol = "JitoSOL";
-}
 
 // Perp markets
 export const PERP_MARKETS_LOOKUP = CommonConfig.perpMarketsLookup;
-
-export const DRIFT_PUBLIC_S3_BUCKET =
-  "https://drift-public.s3.eu-central-1.amazonaws.com";
-
-export const DRIFT_UI_API_URL = "https://app.drift.trade/api";
 
 export default Env;

@@ -54,5 +54,6 @@ install_and_build_package "drift-common/protocol/sdk" "" "true" "true" "bun run 
 install_and_build_package "drift-common/common-ts" "@drift-labs/sdk" "true" "true" ""
 install_and_build_package "drift-common/icons" "" "true" "true" ""
 install_and_build_package "drift-common/react" "@drift-labs/sdk @drift/common @drift-labs/icons" "true" "true" ""
+install_and_build_package "drift-vaults/ts/sdk" "" "true" "true" ""
 
-install_and_build_package "ui" "@drift-labs/react @drift-labs/sdk @drift/common @drift-labs/icons" "" "true" ""
+install_and_build_package "ui" "@drift-labs/react @drift-labs/sdk @drift/common @drift-labs/icons @drift-labs/vaults-sdk" "" "true" ""

@@ -1,7 +1,10 @@
 import { useModalStore } from "@/stores/useModalStore";
-import { useCommonDriftActions, useCommonDriftStore } from "@drift-labs/react";
+import {
+  useCommonDriftActions,
+  useCommonDriftStore,
+  useWallet,
+} from "@drift-labs/react";
 import { BASE_PRECISION_EXP, BigNum } from "@drift-labs/sdk";
-import { useWallet } from "@solana/wallet-adapter-react";
 import { useEffect } from "react";
 
 /**

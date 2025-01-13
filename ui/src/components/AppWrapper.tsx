@@ -6,6 +6,7 @@ import {
   DriftProvider,
   initializeDriftStore,
   useCommonDriftStore,
+  useHandleBadRpc,
 } from "@drift-labs/react";
 import { WalletContext, WalletProvider } from "@solana/wallet-adapter-react";
 import { useEffect } from "react";
@@ -15,6 +16,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import useSyncWalletToStore from "@/hooks/useSyncWalletToStore";
 
 import Env from "@/constants/environment";
+import { useSyncVaultClient } from "@/hooks/useSyncVaultClient";
 
 initializeDriftStore(Env);
 
@@ -29,6 +31,8 @@ const queryClient = new QueryClient({
 
 const AppSetup = ({ children }: { children: React.ReactNode }) => {
   useSyncWalletToStore();
+  useSyncVaultClient();
+  useHandleBadRpc();
 
   return <>{children}</>;
 };

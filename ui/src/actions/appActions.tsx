@@ -8,7 +8,9 @@ const createAppActions = (
   get: StoreApi<AppStoreState>["getState"],
   set: (x: (s: AppStoreState) => void) => void,
 ) => {
-  return {};
+  return {
+    
+  };
 };
 
 export default createAppActions;

@@ -31,9 +31,7 @@ export default function ConnectButton({ className }: { className?: string }) {
         </>
       )}
 
-      {authority && (
-        <span>{COMMON_UI_UTILS.abbreviateAddress(authority)}</span>
-      )}
+      {authority && <span>{COMMON_UI_UTILS.abbreviateAddress(authority)}</span>}
     </Button>
   );
 }
