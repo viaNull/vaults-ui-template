@@ -12,19 +12,30 @@ import { Button } from "@/components/ui/button";
 import { UpdateVaultForm } from "../components/UpdateVaultForm";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import { twMerge } from "tailwind-merge";
+import { useCommonDriftStore } from "@drift-labs/react";
 
 type FetchVaultFn = () => Promise<void>;
 
 const VaultInfoRow = ({
   label,
   value,
+  labelClassName,
 }: {
   label: string;
   value: React.ReactNode;
+  labelClassName?: string;
 }) => {
   return (
     <div className="flex justify-between gap-1 pt-1">
-      <span className="text-sm text-gray-500++ max-w-[300px]">{label}</span>
+      <span
+        className={twMerge(
+          "text-sm text-gray-500++ max-w-[300px]",
+          labelClassName,
+        )}
+      >
+        {label}
+      </span>
       <span className="text-sm text-right break-all">{value}</span>
     </div>
   );
@@ -48,8 +59,8 @@ const VaultOnChainInformation = ({ vault }: { vault: Vault }) => {
     <div className="flex flex-col gap-3">
       <SectionHeader>Vault On-Chain Account Information</SectionHeader>
 
-      <div className="flex gap-4">
-        <div className="flex flex-col w-1/2 gap-1 divide-y divide-gray-200 shrink-0">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col w-full gap-1 divide-y divide-gray-200">
           <VaultInfoRow label="Name" value={decodeName(vault.name)} />
           <VaultInfoRow label="Pubkey" value={vault.pubkey.toBase58()} />
           <VaultInfoRow label="Manager" value={vault.manager.toBase58()} />
@@ -103,10 +114,13 @@ const VaultOnChainInformation = ({ vault }: { vault: Vault }) => {
             value={vault.permissioned.toString()}
           />
         </div>
-        <div className="flex flex-col w-1/2 gap-1 divide-y divide-gray-200 shrink-0">
+        <div className="flex flex-col gap-1 divide-y divide-gray-200">
           <VaultInfoRow
             label="Total Withdraw Requested"
             value={tokenValueDisplay(vault.totalWithdrawRequested)}
+            labelClassName={twMerge(
+              !vault.totalWithdrawRequested.isZero() && "text-red-500",
+            )}
           />
           <VaultInfoRow
             label="User Shares"
@@ -507,6 +521,48 @@ const UpdateVault = ({
   );
 };
 
+const WhitelistWallet = ({ vault }: { vault: Vault }) => {
+  const vaultClient = useAppStore((s) => s.vaultClient);
+  const manager = useCommonDriftStore((s) => s.authority);
+  const [walletToWhitelist, setWalletToWhitelist] = useState("");
+
+  const handleWhitelistWallet = async () => {
+    if (!vaultClient || !manager) {
+      return;
+    }
+
+    try {
+      await vaultClient.initializeVaultDepositor(
+        vault.pubkey,
+        new PublicKey(walletToWhitelist),
+        manager,
+      );
+      toast.success("Wallet whitelisted");
+      setWalletToWhitelist("");
+    } catch (e) {
+      toast.error("Failed to whitelist wallet. Check console for error logs");
+      console.error(e);
+    }
+  };
+
+  if (!vault.permissioned) {
+    return <div>Vault is not permissioned.</div>;
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      <span>Wallet</span>
+      <div className="flex gap-4">
+        <Input
+          value={walletToWhitelist}
+          onChange={(e) => setWalletToWhitelist(e.target.value)}
+        />
+        <Button onClick={handleWhitelistWallet}>Whitelist</Button>
+      </div>
+    </div>
+  );
+};
+
 export default function VaultManagerVaultPage(props: {
   params: Promise<{
     vaultPubkey: string;
@@ -550,9 +606,18 @@ export default function VaultManagerVaultPage(props: {
     <div className="flex flex-col gap-4">
       <VaultOnChainInformation vault={vault} />
 
+      <div className="w-full h-[1px] bg-gray-500 my-4" />
+
       <SectionHeader>Manager Actions</SectionHeader>
       <ManagerDeposit vault={vault} fetchVault={fetchVault} />
       <ManagerWithdraw vault={vault} fetchVault={fetchVault} />
+
+      <div className="w-full h-[1px] bg-gray-500 my-4" />
+
+      <SectionHeader>Whitelist Wallets</SectionHeader>
+      <WhitelistWallet vault={vault} />
+
+      <div className="w-full h-[1px] bg-gray-500 my-4" />
 
       <SectionHeader>Vault Updates</SectionHeader>
       <UpdateMarginTrading

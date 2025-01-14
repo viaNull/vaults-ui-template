@@ -51,7 +51,7 @@ export const VaultCard = ({ vault }: { vault: Vault }) => {
         }
       />
       <Link href={`${PAGES.vaultManagerHome}/${vault.pubkey.toBase58()}`}>
-        <Button className="mt-2">View Vault</Button>
+        <Button className="w-full mt-2">View Vault</Button>
       </Link>
     </div>
   );

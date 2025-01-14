@@ -13,7 +13,7 @@ const NavLink = ({
   children: React.ReactNode;
 }) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = pathname.split("/")[1] === href.split("/")[1];
 
   return (
     <Link
