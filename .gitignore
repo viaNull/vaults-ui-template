@@ -4,3 +4,4 @@ ui/.env.local
 node_modules
 .vercel
 *.env
+.DS_Store

@@ -14,9 +14,11 @@ function print_exec_command() {
 }
 
 # Function to perform build tasks
-yarn_build() {
+bun_build() {
     local folder=$1
     local additional_cmd=$2
+    local build_cmd=${3:-"bun run build"}  # Default to "bun run build" if not specified
+
     cd ${folder}
     print_message "build-vercel.sh" "Building ${folder}..."
     
@@ -24,7 +26,7 @@ yarn_build() {
         ${additional_cmd}
     fi
 
-    yarn run build
+    ${build_cmd}
 
     cd - &> /dev/null
 }
@@ -34,17 +36,17 @@ node -v
 
 print_exec_command "cd .." # in root dir
 
-# Build tasks
-yarn_build "drift-common/protocol/sdk" "bun add @project-serum/borsh"
-yarn_build "drift-common/common-ts" ""
-yarn_build "drift-common/icons" ""
-yarn_build "drift-common/react" ""
-yarn_build "drift-vaults/ts/sdk" ""
+# Build tasks (using default build command)
+bun_build "drift-common/protocol/sdk" "bun add @project-serum/borsh" "bun run build:browser"
+bun_build "drift-common/common-ts" "" ""
+bun_build "drift-common/icons" "" ""
+bun_build "drift-common/react" "" ""
+bun_build "drift-vaults/ts/sdk" "" ""
 
 print_exec_command "cd ui" # in ui dir
 
 # Build UI
-yarn_build "."
+bun_build "."
 
 # Get the end time
 end_time=$(date +%s)

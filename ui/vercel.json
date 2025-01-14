@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/vaults/backfill-vault-depositor-records",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/vaults/vault-snapshots",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/vaults/update-apy-returns",
+      "schedule": "0 * * * *"
+    }
+  ]
+}
