@@ -10,7 +10,7 @@ import {
 import { VaultAccount } from "@drift-labs/vaults-sdk";
 import dayjs from "dayjs";
 import { eq, desc } from "drizzle-orm";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { VAULTS, UiVaultConfig } from "@/constants/vaults";
 import { db } from "@/db";
 
@@ -158,7 +158,7 @@ export async function GET(request: NextRequest) {
 
   await db.insert(vault_snapshots).values(vaultsSnapshotsData);
 
-  return Response.json(vaultsSnapshotsData, {
+  return NextResponse.json(vaultsSnapshotsData, {
     status: 200,
   });
 }

@@ -12,7 +12,7 @@ import {
   QUOTE_PRECISION_EXP,
 } from "@drift-labs/sdk";
 import { VAULTS, UiVaultConfig } from "@/constants/vaults";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { Vault, VAULT_SHARES_PRECISION_EXP } from "@drift-labs/vaults-sdk";
 import { getOraclePrice, setupClients } from "@/lib/api";
 import { REDIS_KEYS } from "@/constants/redis";
@@ -278,20 +278,12 @@ export const GET = async (request: NextRequest) => {
 
     const vaultApysLookup = await calcApyForAllVaults();
 
-    if (Object.keys(vaultApysLookup).length < 2) {
-      return Response.json({
-        data: vaultApysLookup,
-        message:
-          "Vaults were not updated in cache since there was less than 2 vaults to update (possible an error). Manually configure to override this",
-      });
-    }
-
     const apyReturnsKey = REDIS_KEYS.periodApys;
     await kv.hset(apyReturnsKey, vaultApysLookup);
 
-    return Response.json({ data: vaultApysLookup });
+    return NextResponse.json({ data: vaultApysLookup });
   } catch (err) {
     console.error(err);
-    return Response.json({ error: err }, { status: 500 });
+    return NextResponse.json({ error: err }, { status: 500 });
   }
 };

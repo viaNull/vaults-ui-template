@@ -1,5 +1,5 @@
 import { asc, eq } from "drizzle-orm";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { vault_snapshots } from "@/db/schema";
 
@@ -9,7 +9,7 @@ export const GET = async (request: NextRequest) => {
   const vault = searchParams.get("vault");
 
   if (!vault) {
-    return Response.json({
+    return NextResponse.json({
       error: "vault is required in the query params",
     });
   }
@@ -20,7 +20,7 @@ export const GET = async (request: NextRequest) => {
     .where(eq(vault_snapshots.vault, vault))
     .orderBy(asc(vault_snapshots.slot));
 
-  return Response.json(vaultSnapshots, {
+  return NextResponse.json(vaultSnapshots, {
     headers: {
       "Access-Control-Allow-Origin": "*",
     },
