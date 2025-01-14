@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useCallback, useEffect, useState } from "react";
-import { decodeName, Vault, WithdrawRequest } from "@drift-labs/vaults-sdk";
+import { decodeName, Vault, WithdrawUnit } from "@drift-labs/vaults-sdk";
 import useAppStore from "@/stores/app/useAppStore";
 import { PublicKey } from "@solana/web3.js";
 import { SPOT_MARKETS_LOOKUP } from "@/constants/environment";
@@ -25,7 +25,7 @@ const VaultInfoRow = ({
   return (
     <div className="flex justify-between gap-1 pt-1">
       <span className="text-sm text-gray-500++ max-w-[300px]">{label}</span>
-      <span className="text-sm">{value}</span>
+      <span className="text-sm text-right break-all">{value}</span>
     </div>
   );
 };
@@ -49,7 +49,7 @@ const VaultOnChainInformation = ({ vault }: { vault: Vault }) => {
       <SectionHeader>Vault On-Chain Account Information</SectionHeader>
 
       <div className="flex gap-4">
-        <div className="flex flex-col flex-1 gap-1 divide-y divide-gray-200">
+        <div className="flex flex-col w-1/2 gap-1 divide-y divide-gray-200 shrink-0">
           <VaultInfoRow label="Name" value={decodeName(vault.name)} />
           <VaultInfoRow label="Pubkey" value={vault.pubkey.toBase58()} />
           <VaultInfoRow label="Manager" value={vault.manager.toBase58()} />
@@ -69,7 +69,7 @@ const VaultOnChainInformation = ({ vault }: { vault: Vault }) => {
           />
           <VaultInfoRow
             label="Spot Market Index"
-            value={`${vault.spotMarketIndex} (${spotMarketConfig.symbol})`}
+            value={`${vault.spotMarketIndex} -> ${spotMarketConfig.symbol}`}
           />
           <VaultInfoRow
             label="Redeem Period"
@@ -103,7 +103,7 @@ const VaultOnChainInformation = ({ vault }: { vault: Vault }) => {
             value={vault.permissioned.toString()}
           />
         </div>
-        <div className="flex flex-col flex-1 gap-1 divide-y divide-gray-200">
+        <div className="flex flex-col w-1/2 gap-1 divide-y divide-gray-200 shrink-0">
           <VaultInfoRow
             label="Total Withdraw Requested"
             value={tokenValueDisplay(vault.totalWithdrawRequested)}
@@ -182,8 +182,36 @@ const SubSectionHeader = ({ children }: { children: React.ReactNode }) => {
   return <h3 className="text-lg font-semibold">{children}</h3>;
 };
 
-const ManagerDeposit = ({ vault }: { vault: Vault }) => {
+const ManagerDeposit = ({
+  vault,
+  fetchVault,
+}: {
+  vault: Vault;
+  fetchVault: FetchVaultFn;
+}) => {
   const spotMarketConfig = SPOT_MARKETS_LOOKUP[vault.spotMarketIndex];
+  const vaultClient = useAppStore((s) => s.vaultClient);
+  const [depositAmount, setDepositAmount] = useState("");
+
+  const handleDeposit = async () => {
+    if (!vaultClient) {
+      return;
+    }
+
+    const amountBigNum = BigNum.fromPrint(
+      depositAmount,
+      spotMarketConfig.precisionExp,
+    );
+
+    try {
+      await vaultClient.managerDeposit(vault.pubkey, amountBigNum.val);
+      await fetchVault();
+      toast.success("Deposit successful");
+    } catch (e) {
+      toast.error("Failed to deposit");
+      console.error(e);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-3">
@@ -191,8 +219,12 @@ const ManagerDeposit = ({ vault }: { vault: Vault }) => {
       <div className="flex flex-col gap-1">
         <span>Deposit Amount ({spotMarketConfig.symbol})</span>
         <div className="flex gap-4">
-          <Input />
-          <Button>Deposit</Button>
+          <Input
+            type="number"
+            value={depositAmount}
+            onChange={(e) => setDepositAmount(e.target.value)}
+          />
+          <Button onClick={handleDeposit}>Deposit</Button>
         </div>
       </div>
     </div>
@@ -205,10 +237,18 @@ enum WithdrawalState {
   Available,
 }
 
-const ManagerWithdraw = ({ vault }: { vault: Vault }) => {
+const ManagerWithdraw = ({
+  vault,
+  fetchVault,
+}: {
+  vault: Vault;
+  fetchVault: FetchVaultFn;
+}) => {
   const spotMarketConfig = SPOT_MARKETS_LOOKUP[vault.spotMarketIndex];
   const precisionExp = spotMarketConfig.precisionExp;
   const lastManagerWithdrawRequest = vault.lastManagerWithdrawRequest;
+  const vaultClient = useAppStore((s) => s.vaultClient);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
 
   const withdrawalState = getWithdrawalState();
 
@@ -222,11 +262,44 @@ const ManagerWithdraw = ({ vault }: { vault: Vault }) => {
       return WithdrawalState.UnRequested;
     }
 
-    if (lastManagerWithdrawRequest.ts.toNumber() > Date.now() / 1000) {
+    if (
+      lastManagerWithdrawRequest.ts.toNumber() + vault.redeemPeriod.toNumber() >
+      Date.now() / 1000
+    ) {
       return WithdrawalState.RequestedAndPending;
     }
 
     return WithdrawalState.Available;
+  }
+
+  async function handleWithdrawCta() {
+    if (!vaultClient) {
+      return;
+    }
+
+    try {
+      if (withdrawalState === WithdrawalState.UnRequested) {
+        const amountBigNum = BigNum.fromPrint(withdrawAmount, precisionExp);
+        await vaultClient.managerRequestWithdraw(
+          vault.pubkey,
+          amountBigNum.val,
+          WithdrawUnit.TOKEN, // WithdrawUnit.SHARES may be a better option to handle max values
+        );
+        await fetchVault();
+        toast.success("Withdrawal requested");
+      } else if (withdrawalState === WithdrawalState.RequestedAndPending) {
+        await vaultClient.managerCancelWithdrawRequest(vault.pubkey);
+        await fetchVault();
+        toast.success("Withdrawal cancelled");
+      } else if (withdrawalState === WithdrawalState.Available) {
+        await vaultClient.managerWithdraw(vault.pubkey);
+        await fetchVault();
+        toast.success("Withdrawal successful");
+      }
+    } catch (e) {
+      toast.error("Failed withdrawal action. Check console for error logs");
+      console.error(e);
+    }
   }
 
   function renderWithdrawalState() {
@@ -236,15 +309,19 @@ const ManagerWithdraw = ({ vault }: { vault: Vault }) => {
           <div className="flex flex-col gap-1">
             <span>Withdraw Amount ({spotMarketConfig.symbol})</span>
             <div className="flex gap-4">
-              <Input />
-              <Button>Request Withdraw</Button>
+              <Input
+                type="number"
+                value={withdrawAmount}
+                onChange={(e) => setWithdrawAmount(e.target.value)}
+              />
+              <Button onClick={handleWithdrawCta}>Request Withdraw</Button>
             </div>
           </div>
         );
       case WithdrawalState.RequestedAndPending:
         return (
-          <div>
-            <div>
+          <div className="flex items-center gap-4">
+            <span>
               {`Shares Requested: ${lastManagerWithdrawRequest.shares.toString()} | Max Value: ${tokenValueDisplay(
                 lastManagerWithdrawRequest.value,
               )} | Withdrawal Available On: ${dayjs
@@ -252,20 +329,20 @@ const ManagerWithdraw = ({ vault }: { vault: Vault }) => {
                   lastManagerWithdrawRequest.ts.toNumber() +
                     vault.redeemPeriod.toNumber(),
                 )
-                .format("MM/DD/YYYY hh:mm:ss A")}`}
-            </div>
-            <Button>Cancel Withdraw Request</Button>
+                .format("DD/MM/YYYY hh:mm:ss A")}`}
+            </span>
+            <Button onClick={handleWithdrawCta}>Cancel Withdraw Request</Button>
           </div>
         );
       case WithdrawalState.Available:
         return (
-          <div>
-            <div>
+          <div className="flex items-center gap-4">
+            <span>
               {`Shares Requested: ${lastManagerWithdrawRequest.shares.toString()} | Max Value: ${tokenValueDisplay(
                 lastManagerWithdrawRequest.value,
               )} | Withdrawal Available ✅`}
-            </div>
-            <Button>Withdraw</Button>
+            </span>
+            <Button onClick={handleWithdrawCta}>Withdraw</Button>
           </div>
         );
     }
@@ -474,8 +551,8 @@ export default function VaultManagerVaultPage(props: {
       <VaultOnChainInformation vault={vault} />
 
       <SectionHeader>Manager Actions</SectionHeader>
-      <ManagerDeposit vault={vault} />
-      <ManagerWithdraw vault={vault} />
+      <ManagerDeposit vault={vault} fetchVault={fetchVault} />
+      <ManagerWithdraw vault={vault} fetchVault={fetchVault} />
 
       <SectionHeader>Vault Updates</SectionHeader>
       <UpdateMarginTrading

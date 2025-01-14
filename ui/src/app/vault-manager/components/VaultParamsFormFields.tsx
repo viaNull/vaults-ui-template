@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { SPOT_MARKETS_LOOKUP } from "@/constants/environment";
 import { SpotMarketConfig } from "@drift-labs/sdk";
+import { twMerge } from "tailwind-merge";
 
 // Base schema without name and spotMarketIndex
 export const updateVaultSchema = z.object({
@@ -38,8 +38,18 @@ export const createVaultSchema = updateVaultSchema.extend({
 export type CreateVaultSchema = z.infer<typeof createVaultSchema>;
 export type UpdateVaultSchema = z.infer<typeof updateVaultSchema>;
 
-const SecondaryInfo = ({ children }: { children: React.ReactNode }) => {
-  return <span className="px-1 text-sm text-gray-500">{children}</span>;
+const SecondaryInfo = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <span className={twMerge("px-1 text-sm text-gray-500", className)}>
+      {children}
+    </span>
+  );
 };
 
 type VaultFormFieldsProps =
@@ -101,7 +111,17 @@ export const VaultParamsFormFields = ({
                 </FormControl>
                 <FormMessage />
                 <FormDescription>
-                  The index of the spot market to use for the vault.
+                  The index of the spot market to use for the vault. Drift Spot
+                  Market accounts are seeded by an index, and can be referred to
+                  over here:{" "}
+                  <a
+                    className="text-blue-500"
+                    href="https://github.com/drift-labs/protocol-v2/blob/master/sdk/src/constants/spotMarkets.ts"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    https://github.com/drift-labs/protocol-v2/blob/master/sdk/src/constants/spotMarkets.ts
+                  </a>
                 </FormDescription>
               </FormItem>
             )}
@@ -112,7 +132,9 @@ export const VaultParamsFormFields = ({
       <div>
         <FormLabel>
           Withdrawal Waiting Period
-          <SecondaryInfo>(cannot be increased in the future)</SecondaryInfo>
+          <SecondaryInfo className="text-red-400">
+            (cannot be increased in the future)
+          </SecondaryInfo>
         </FormLabel>
         <div className="grid grid-cols-4 gap-4">
           {["days", "hours", "minutes", "seconds"].map((unit) => (
@@ -164,6 +186,8 @@ export const VaultParamsFormFields = ({
             <FormMessage />
             <FormDescription>
               The maximum number of tokens that can be deposited into the vault.
+              E.g. for USDC, 1 token = 1 USDC, and not 0.000001 USDC, but will
+              be reflected as 1,000,000 on-chain.
             </FormDescription>
           </FormItem>
         )}
@@ -185,6 +209,12 @@ export const VaultParamsFormFields = ({
               />
             </FormControl>
             <FormMessage />
+            <FormDescription>
+              If the vault depositor already has the minimum deposit amount in
+              the vault, the vault depositor can deposit any amount. E.g. for
+              USDC, 1 token = 1 USDC, and not 0.000001 USDC, but will be
+              reflected as 1,000,000 on-chain.
+            </FormDescription>
           </FormItem>
         )}
       />
@@ -194,7 +224,12 @@ export const VaultParamsFormFields = ({
         name="managementFee"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Management Fee (%)</FormLabel>
+            <FormLabel>
+              Annual Management Fee (%)
+              <SecondaryInfo className="text-red-400">
+                (cannot be increased in the future)
+              </SecondaryInfo>
+            </FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -203,6 +238,12 @@ export const VaultParamsFormFields = ({
               />
             </FormControl>
             <FormMessage />
+            <FormDescription>
+              A fee that is charged proportionally based on the time spent in
+              the vault. The percentage is the annualized percentage. Fees are
+              charged upon any vault depositor action (e.g. deposit/withdraw
+              etc.).
+            </FormDescription>
           </FormItem>
         )}
       />
@@ -212,7 +253,12 @@ export const VaultParamsFormFields = ({
         name="profitShare"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Profit Share (%)</FormLabel>
+            <FormLabel>
+              Profit Share (%)
+              <SecondaryInfo className="text-red-400">
+                (cannot be increased in the future)
+              </SecondaryInfo>
+            </FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -221,6 +267,13 @@ export const VaultParamsFormFields = ({
               />
             </FormControl>
             <FormMessage />
+            <FormDescription>
+              A fee that is charged on the profits of the vault depositor. Fees
+              are charged upon any vault depositor action (e.g. deposit/withdraw
+              etc.), or the vault manager can call the{" "}
+              <span className="text-blue-500">getApplyProfitShareIx</span> from
+              the Vault SDK.
+            </FormDescription>
           </FormItem>
         )}
       />
