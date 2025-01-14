@@ -1,6 +1,6 @@
 # Vaults UI Template
 
-A simple UI template for vaults.
+A simple fullstack template for vaults - includes a NextJS UI supported by a NextJS + Vercel backend.
 
 ### High-level Code Structure
 

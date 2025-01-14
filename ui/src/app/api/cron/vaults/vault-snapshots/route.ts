@@ -9,7 +9,6 @@ import {
 } from "@drift-labs/sdk";
 import { VaultAccount } from "@drift-labs/vaults-sdk";
 import dayjs from "dayjs";
-import { eq, desc } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { VAULTS, UiVaultConfig } from "@/constants/vaults";
 import { db } from "@/db";

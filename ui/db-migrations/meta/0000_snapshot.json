@@ -1,0 +1,371 @@
+{
+  "id": "776a055b-d884-4d67-88dd-65465c6218e5",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.vault_depositor_records": {
+      "name": "vault_depositor_records",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ts": {
+          "name": "ts",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tx_sig": {
+          "name": "tx_sig",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slot": {
+          "name": "slot",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vault": {
+          "name": "vault",
+          "type": "varchar(44)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "depositorAuthority": {
+          "name": "depositorAuthority",
+          "type": "varchar(44)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action": {
+          "name": "action",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "spotMarketIndex": {
+          "name": "spotMarketIndex",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vaultSharesBefore": {
+          "name": "vaultSharesBefore",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vaultSharesAfter": {
+          "name": "vaultSharesAfter",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vaultEquityBefore": {
+          "name": "vaultEquityBefore",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "userVaultSharesBefore": {
+          "name": "userVaultSharesBefore",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "totalVaultSharesBefore": {
+          "name": "totalVaultSharesBefore",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "userVaultSharesAfter": {
+          "name": "userVaultSharesAfter",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "totalVaultSharesAfter": {
+          "name": "totalVaultSharesAfter",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "profitShare": {
+          "name": "profitShare",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "managementFee": {
+          "name": "managementFee",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "managementFeeShares": {
+          "name": "managementFeeShares",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assetPrice": {
+          "name": "assetPrice",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notionalValue": {
+          "name": "notionalValue",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "vault": {
+          "name": "vault",
+          "columns": [
+            {
+              "expression": "vault",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "vaultDepositor": {
+          "name": "vaultDepositor",
+          "columns": [
+            {
+              "expression": "vault",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "depositorAuthority",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vault_depositor_records_tx_sig_amount_vault_depositorAuthority_unique": {
+          "name": "vault_depositor_records_tx_sig_amount_vault_depositorAuthority_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "tx_sig",
+            "amount",
+            "vault",
+            "depositorAuthority"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vault_snapshots": {
+      "name": "vault_snapshots",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ts": {
+          "name": "ts",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slot": {
+          "name": "slot",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "oraclePrice": {
+          "name": "oraclePrice",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "totalAccountQuoteValue": {
+          "name": "totalAccountQuoteValue",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "totalAccountBaseValue": {
+          "name": "totalAccountBaseValue",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "totalAccountBaseValueEwma": {
+          "name": "totalAccountBaseValueEwma",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vault": {
+          "name": "vault",
+          "type": "varchar(44)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "userShares": {
+          "name": "userShares",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "totalShares": {
+          "name": "totalShares",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "netDeposits": {
+          "name": "netDeposits",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "netQuoteDeposits": {
+          "name": "netQuoteDeposits",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "totalDeposits": {
+          "name": "totalDeposits",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "totalWithdraws": {
+          "name": "totalWithdraws",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "totalWithdrawRequested": {
+          "name": "totalWithdrawRequested",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "managerNetDeposits": {
+          "name": "managerNetDeposits",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "managerTotalDeposits": {
+          "name": "managerTotalDeposits",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "managerTotalWithdraws": {
+          "name": "managerTotalWithdraws",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "managerTotalProfitShare": {
+          "name": "managerTotalProfitShare",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "managerTotalFee": {
+          "name": "managerTotalFee",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "vaultIdx": {
+          "name": "vaultIdx",
+          "columns": [
+            {
+              "expression": "vault",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "slotSortIdx": {
+          "name": "slotSortIdx",
+          "columns": [
+            {
+              "expression": "slot",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

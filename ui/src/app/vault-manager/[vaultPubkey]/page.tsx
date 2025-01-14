@@ -14,6 +14,7 @@ import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { twMerge } from "tailwind-merge";
 import { useCommonDriftStore } from "@drift-labs/react";
+import { createVaultSnapshot } from "@/server-actions/vaults";
 
 type FetchVaultFn = () => Promise<void>;
 
@@ -563,6 +564,25 @@ const WhitelistWallet = ({ vault }: { vault: Vault }) => {
   );
 };
 
+const DatabaseActions = ({ vault }: { vault: Vault }) => {
+  const handleVaultSnapshot = async () => {
+    const vaultSnapshot = await createVaultSnapshot(vault.pubkey.toBase58());
+    toast.success("Vault snapshot created. Check console for data");
+    console.log(vaultSnapshot);
+  };
+
+  return (
+    <div className="flex flex-col gap-3">
+      <span className="text-red-400">
+        Note: This will create a snapshot of the vault and store it in the
+        database, and the time of snapshot may not be consistent with the rest
+        of your data.
+      </span>
+      <Button onClick={handleVaultSnapshot}>Create Vault Snapshot</Button>
+    </div>
+  );
+};
+
 export default function VaultManagerVaultPage(props: {
   params: Promise<{
     vaultPubkey: string;
@@ -611,6 +631,11 @@ export default function VaultManagerVaultPage(props: {
       <SectionHeader>Manager Actions</SectionHeader>
       <ManagerDeposit vault={vault} fetchVault={fetchVault} />
       <ManagerWithdraw vault={vault} fetchVault={fetchVault} />
+
+      <div className="w-full h-[1px] bg-gray-500 my-4" />
+
+      <SectionHeader>Database Actions</SectionHeader>
+      <DatabaseActions vault={vault} />
 
       <div className="w-full h-[1px] bg-gray-500 my-4" />
 
