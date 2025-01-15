@@ -38,4 +38,4 @@ const TEST_VAULT_2: UiVaultConfig = {
   isNotionalGrowthStrategy: true,
 };
 
-export const VAULTS = [TEST_VAULT_1, TEST_VAULT_2];
+export const VAULTS = [TEST_VAULT_1];

@@ -189,3 +189,6 @@ export const SEMANTIC_CLASSES = {
   "hover-overlay": "var(--hover-overlay)",
   "default-border": "var(--default-border)",
 };
+
+export const POSITIVE_GREEN_COLOR = "var(--positive-green)";
+export const NEGATIVE_RED_COLOR = "var(--negative-red)";

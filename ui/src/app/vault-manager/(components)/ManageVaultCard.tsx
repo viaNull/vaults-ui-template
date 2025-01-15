@@ -1,8 +1,8 @@
 import { decodeName, Vault } from "@drift-labs/vaults-sdk";
-import { MarketIcon } from "../MarketIcon";
+import { MarketIcon } from "@/components/MarketIcon";
 import { SPOT_MARKETS_LOOKUP } from "@/constants/environment";
 import { BigNum } from "@drift-labs/sdk";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PAGES } from "@/constants/pages";
 
@@ -23,8 +23,7 @@ const VaultInfoRow = ({
 
 const DEFAULT_LIQUIDATION_DELEGATE = "11111111111111111111111111111111";
 
-// display name, pubkey
-export const VaultCard = ({ vault }: { vault: Vault }) => {
+export const ManageVaultCard = ({ vault }: { vault: Vault }) => {
   const spotMarketConfig = SPOT_MARKETS_LOOKUP[vault.spotMarketIndex];
 
   return (

@@ -5,8 +5,10 @@ import {
   DEFAULT_BREAKPOINTS,
   DriftProvider,
   initializeDriftStore,
+  MarketAndAccount,
   useCommonDriftStore,
   useHandleBadRpc,
+  useSyncOraclePriceStore,
 } from "@drift-labs/react";
 import { WalletContext, WalletProvider } from "@solana/wallet-adapter-react";
 import { useEffect } from "react";
@@ -15,7 +17,11 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import useSyncWalletToStore from "@/hooks/useSyncWalletToStore";
 
-import Env from "@/constants/environment";
+import Env, {
+  PERP_MARKETS_LOOKUP,
+  SPOT_MARKETS_LOOKUP,
+} from "@/constants/environment";
+import { UIMarket } from "@drift/common";
 import { useSyncVaultClient } from "@/hooks/useSyncVaultClient";
 
 initializeDriftStore(Env);
@@ -29,8 +35,23 @@ const queryClient = new QueryClient({
   },
 });
 
+const marketsAndAccounts: MarketAndAccount[] = [];
+PERP_MARKETS_LOOKUP.forEach((market) => {
+  marketsAndAccounts.push({
+    market: UIMarket.createPerpMarket(market.marketIndex),
+    accountToUse: market.oracle,
+  });
+});
+SPOT_MARKETS_LOOKUP.forEach((market) => {
+  marketsAndAccounts.push({
+    market: UIMarket.createSpotMarket(market.marketIndex),
+    accountToUse: market.oracle,
+  });
+});
+
 const AppSetup = ({ children }: { children: React.ReactNode }) => {
   useSyncWalletToStore();
+  useSyncOraclePriceStore(marketsAndAccounts);
   useSyncVaultClient();
   useHandleBadRpc();
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { CreateVaultForm } from "../components/CreateVaultForm";
+import { CreateVaultForm } from "../(components)/CreateVaultForm";
 
 export default function CreateVaultPage() {
   return (

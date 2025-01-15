@@ -9,7 +9,7 @@ import { BigNum, BN, PERCENTAGE_PRECISION, UserAccount } from "@drift-labs/sdk";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { UpdateVaultForm } from "../components/UpdateVaultForm";
+import { UpdateVaultForm } from "../(components)/UpdateVaultForm";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { twMerge } from "tailwind-merge";
@@ -576,7 +576,8 @@ const DatabaseActions = ({ vault }: { vault: Vault }) => {
       <span className="text-red-400">
         Note: This will create a snapshot of the vault and store it in the
         database, and the time of snapshot may not be consistent with the rest
-        of your data.
+        of your data. It is still recommended to take a snapshot after your
+        first deposit.
       </span>
       <Button onClick={handleVaultSnapshot}>Create Vault Snapshot</Button>
     </div>

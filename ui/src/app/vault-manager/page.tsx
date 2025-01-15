@@ -9,7 +9,7 @@ import { Vault } from "@drift-labs/vaults-sdk";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { VaultCard } from "@/components/vaultManager/VaultCard";
+import { ManageVaultCard } from "./(components)/ManageVaultCard";
 
 export default function VaultManagerPage() {
   const vaultClient = useAppStore((s) => s.vaultClient);
@@ -41,7 +41,7 @@ export default function VaultManagerPage() {
 
       <div className="grid grid-cols-2 gap-8">
         {vaults.map((vault) => (
-          <VaultCard key={vault.pubkey.toBase58()} vault={vault} />
+          <ManageVaultCard key={vault.pubkey.toBase58()} vault={vault} />
         ))}
       </div>
     </div>
