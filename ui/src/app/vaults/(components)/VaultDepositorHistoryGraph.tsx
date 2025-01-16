@@ -131,7 +131,7 @@ export const VaultDepositorHistoryGraph = (props: {
         MarketId.createSpotMarket(props.depositAssetConfig.marketIndex),
       )?.rawPriceData.price ?? ZERO;
 
-    const reconstructedVaultDepositorHistory: (Pick<
+    type ReconstructedVaultDepositorRecord = Pick<
       SerializedVaultDepositorRecord,
       | "vaultSharesAfter"
       | "vaultSharesBefore"
@@ -139,59 +139,58 @@ export const VaultDepositorHistoryGraph = (props: {
       | "amount"
       | "action"
       | "assetPrice"
-    > & { netDeposits: string; netDepositsNotional: string })[] =
-      vaultDepositorHistory.reduce(
-        (acc, record, index) => {
-          // re-construct the netDeposits attribute, since this isn't stored in the database
-          if (index === 0) {
-            return acc.concat({
-              ...record,
-              netDeposits: record.amount, // assumes that we fetch all depositor's transactions, and first transaction is a deposit
-              netDepositsNotional: record.notionalValue,
-            });
-          }
+    > & { netDeposits: string; netDepositsNotional: string };
 
-          const previousRecord = acc[index - 1];
-
-          if (record.action !== "deposit" && record.action !== "withdraw") {
-            return acc.concat({
-              ...record,
-              netDeposits: previousRecord.netDeposits,
-              netDepositsNotional: previousRecord.netDepositsNotional,
-            });
-          }
-
-          const previousNetDepositBase = BigNum.from(
-            previousRecord.netDeposits,
-            precisionExp,
-          );
-          const currentAmountBase = BigNum.from(record.amount, precisionExp);
-          const currentNetDepositBase =
-            record.action === "deposit"
-              ? previousNetDepositBase.add(currentAmountBase)
-              : previousNetDepositBase.sub(currentAmountBase);
-
-          const previousNetDepositNotional = BigNum.from(
-            previousRecord.netDepositsNotional,
-            precisionExp,
-          );
-          const currentAmountNotional = BigNum.from(
-            record.notionalValue,
-            precisionExp,
-          );
-          const currentNetDepositNotional =
-            record.action === "deposit"
-              ? previousNetDepositNotional.add(currentAmountNotional)
-              : previousNetDepositNotional.sub(currentAmountNotional);
-
+    const reconstructedVaultDepositorHistory: ReconstructedVaultDepositorRecord[] =
+      vaultDepositorHistory.reduce((acc, record, index) => {
+        // re-construct the netDeposits attribute, since this isn't stored in the database
+        if (index === 0) {
           return acc.concat({
             ...record,
-            netDeposits: currentNetDepositBase.toString(),
-            netDepositsNotional: currentNetDepositNotional.toString(),
+            netDeposits: record.amount, // assumes that we fetch all depositor's transactions, and first transaction is a deposit
+            netDepositsNotional: record.notionalValue,
           });
-        },
-        [] as typeof reconstructedVaultDepositorHistory,
-      );
+        }
+
+        const previousRecord = acc[index - 1];
+
+        if (record.action !== "deposit" && record.action !== "withdraw") {
+          return acc.concat({
+            ...record,
+            netDeposits: previousRecord.netDeposits,
+            netDepositsNotional: previousRecord.netDepositsNotional,
+          });
+        }
+
+        const previousNetDepositBase = BigNum.from(
+          previousRecord.netDeposits,
+          precisionExp,
+        );
+        const currentAmountBase = BigNum.from(record.amount, precisionExp);
+        const currentNetDepositBase =
+          record.action === "deposit"
+            ? previousNetDepositBase.add(currentAmountBase)
+            : previousNetDepositBase.sub(currentAmountBase);
+
+        const previousNetDepositNotional = BigNum.from(
+          previousRecord.netDepositsNotional,
+          precisionExp,
+        );
+        const currentAmountNotional = BigNum.from(
+          record.notionalValue,
+          precisionExp,
+        );
+        const currentNetDepositNotional =
+          record.action === "deposit"
+            ? previousNetDepositNotional.add(currentAmountNotional)
+            : previousNetDepositNotional.sub(currentAmountNotional);
+
+        return acc.concat({
+          ...record,
+          netDeposits: currentNetDepositBase.toString(),
+          netDepositsNotional: currentNetDepositNotional.toString(),
+        });
+      }, [] as ReconstructedVaultDepositorRecord[]);
 
     // if no vault depositor's transaction and has vault shares, use his current vault shares as the constant throughout the history of the vault snapshots
     if (

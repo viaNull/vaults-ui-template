@@ -2,6 +2,14 @@
 
 A simple fullstack template for vaults - includes a NextJS UI supported by a NextJS + Vercel backend.
 
+- Vault Manager
+  - create & manage vaults
+  - update vault parameters
+- Vault
+  - Deposit & Withdraw
+  - View vault history
+  - View vault depositor history
+
 ### High-level Code Structure
 
 ```
@@ -30,6 +38,26 @@ A simple fullstack template for vaults - includes a NextJS UI supported by a Nex
 2. Add the custom install command: `bun run install-vercel`
 3. Add the custom build command: `bun run build-vercel`
 4. Deploy the project
+
+---
+
+## Frontend Overview
+
+### Vault Manager
+
+The UI allows anyone to create their own vault, and manage it accordingly. You will be able to
+
+- View vault on-chain account info
+- Update vault parameters
+
+### Vault
+
+The UI allows anyone to deposit and withdraw from any vault (added as hardcoded configs). You will be able to
+
+- Deposit & Withdraw
+- View vault history
+- View vault depositor history
+- View APY of vault
 
 ## Backend Overview
 
