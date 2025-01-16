@@ -1,6 +1,6 @@
 # Vaults UI Template
 
-A simple fullstack template for vaults - includes a NextJS UI supported by a NextJS + Vercel backend.
+A fullstack template for vaults - includes a NextJS UI supported by a NextJS + Vercel backend.
 
 - Vault Manager
   - create & manage vaults
