@@ -27,15 +27,4 @@ const TEST_VAULT_1: UiVaultConfig = {
   isNotionalGrowthStrategy: false,
 };
 
-const TEST_VAULT_2: UiVaultConfig = {
-  name: "my new vault 2",
-  vaultPubkeyString: "CB4u8FfQEY6jjs8sMGkqLCYXtAFQvf1n81cRqxJJ9pL3",
-  managerPubkeyString: "9qJW4iQ425Bz9DRHTRBtXUs4cd68XTJoFYN9xmF9my7n",
-  userPubKeyString: "6jLu4FyCQnp13nAAKdubnmbdnj4qLJb8fKgEwKrB4mPU",
-  description:
-    "Multiply your yields with delta-neutral market making & innovative strategies on SOL/BTC/ETH/JUP",
-  market: SPOT_MARKETS_LOOKUP[0],
-  isNotionalGrowthStrategy: true,
-};
-
 export const VAULTS = [TEST_VAULT_1];
