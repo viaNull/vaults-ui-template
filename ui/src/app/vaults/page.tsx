@@ -8,7 +8,6 @@ export default function VaultsPage() {
   useSyncAllVaultsStats();
 
   const vaultStats = useAppStore((s) => s.vaultsStats);
-  console.log("🚀 ~ VaultsPage ~ vaultStats:", vaultStats);
 
   const loadedVaults = Object.keys(vaultStats);
 
