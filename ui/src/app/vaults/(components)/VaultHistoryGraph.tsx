@@ -164,6 +164,10 @@ export const VaultHistoryGraph = (props: {
         ? currentNotionalPnl
         : vaultStat.totalBasePnl;
 
+      if (vaultStat.totalShares.eq(ZERO)) {
+        return periodSnapshots;
+      }
+
       const sharePrice = vaultStat.tvlBase
         .shift(VAULT_SHARES_PRECISION_EXP)
         .div(vaultStat.totalShares)

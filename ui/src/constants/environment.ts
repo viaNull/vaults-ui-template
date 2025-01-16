@@ -22,7 +22,6 @@ interface EnvironmentVariables extends AppSetupProps {
   isDev: boolean | undefined;
   basePollingRateMs: number;
   rpcOverride: string | undefined;
-  historyServerUrl: string;
 }
 
 const Env: EnvironmentVariables = {
@@ -34,11 +33,6 @@ const Env: EnvironmentVariables = {
     ? Number(process.env.NEXT_PUBLIC_BASE_POLLING_RATE_MS)
     : 1000,
   rpcOverride: process.env.NEXT_PUBLIC_RPC_OVERRIDE,
-  historyServerUrl: process.env.NEXT_PUBLIC_EXCHANGE_HISTORY_SERVER_URL
-    ? process.env.NEXT_PUBLIC_EXCHANGE_HISTORY_SERVER_URL
-    : process.env.NEXT_PUBLIC_DRIFT_ENV === "mainnet-beta"
-      ? EnvironmentConstants.historyServerUrl.mainnet
-      : EnvironmentConstants.historyServerUrl.dev,
   priorityFeePollingMultiplier: 5,
   txSenderRetryInterval: 5000,
 };

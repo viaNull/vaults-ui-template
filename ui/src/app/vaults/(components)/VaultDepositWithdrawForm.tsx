@@ -29,6 +29,7 @@ import {
   withdrawFromVault,
   depositVault,
 } from "@/actions/vaults";
+import { Input } from "@/components/ui/input";
 
 type VaultDepositWithdrawFormProps = {
   uiVaultConfig: UiVaultConfig;
@@ -133,8 +134,10 @@ export const VaultDepositWithdrawForm = (
 
       const maxAmount = BN.min(
         capacityLeftover,
-        BigNum.from(depositAssetWalletBalance, depositAssetConfig.precisionExp)
-          .val,
+        BigNum.fromPrint(
+          depositAssetWalletBalance.toString(),
+          depositAssetConfig.precisionExp,
+        ).val,
       );
       const safeMaxAmount = BN.max(maxAmount, ZERO);
 
@@ -161,19 +164,19 @@ export const VaultDepositWithdrawForm = (
     if (withdrawalState === WithdrawalState.UnRequested) {
       return {
         text: "Request Withdrawal",
-        className: "bg-negative-red",
+        className: "",
         displayInput: true,
       };
     } else if (withdrawalState === WithdrawalState.Requested) {
       return {
         text: "Cancel Request",
-        className: "bg-button-secondary-bg text-text-default",
+        className: "",
         displayInput: false,
       };
     } else {
       return {
         text: "Confirm Withdrawal",
-        className: "bg-negative-red",
+        className: "",
         displayInput: false,
       };
     }
@@ -363,7 +366,7 @@ export const VaultDepositWithdrawForm = (
           onClick={() => setFormType("deposit")}
           className={twMerge(
             "flex-1",
-            formType !== "deposit" && "bg-transparent text-text-secondary",
+            formType !== "deposit" && "text-black bg-transparent",
           )}
         >
           Deposit
@@ -372,9 +375,7 @@ export const VaultDepositWithdrawForm = (
           onClick={() => setFormType("withdraw")}
           className={twMerge(
             "flex-1",
-            formType === "withdraw"
-              ? "bg-negative-red"
-              : "bg-transparent text-text-secondary",
+            formType !== "withdraw" && "text-black bg-transparent",
           )}
         >
           Withdraw
@@ -412,7 +413,7 @@ export const VaultDepositWithdrawForm = (
               <Typo.T5 className="text-text-label">Amount</Typo.T5>
 
               {isWalletConnected && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 bg-gray-200 rounded-sm">
                   {/* The maximum amount is after fees, while the final amount received may differ from the amount requested. */}
                   <Typo.T5 className="flex items-center gap-1 px-1 rounded-sm cursor-pointer bg-button-secondary-bg text-text-secondary">
                     <span>Max:</span>
@@ -424,9 +425,9 @@ export const VaultDepositWithdrawForm = (
               )}
             </div>
 
-            <div className="flex items-center w-full gap-2 px-3 py-4 bg-input-bg">
+            <div className="flex items-center w-full gap-2 bg-input-bg">
               {/** Collateral Selector */}
-              <div>
+              <div className="flex items-center w-full gap-2 ">
                 <div className="flex items-center gap-1 shrink-0">
                   <MarketIcon
                     marketSymbol={depositAssetConfig.symbol}
@@ -435,7 +436,7 @@ export const VaultDepositWithdrawForm = (
                   <Typo.T4>{depositAssetConfig.symbol}</Typo.T4>
                 </div>
 
-                <input
+                <Input
                   type="number"
                   className="w-full max-w-full text-right bg-transparent typo-t1"
                   placeholder="0.0"
@@ -452,17 +453,19 @@ export const VaultDepositWithdrawForm = (
             <div className="flex items-center justify-between w-full gap-1">
               <span>Balance</span>
 
-              <div>
-                {currentUserVaultBaseBalanceAfterFees.prettyPrint()}
-                {" -> "}
-                {afterInputAmountUserVaultBalance.prettyPrint()}
+              <div className="flex items-center gap-1">
+                <MarketIcon
+                  marketSymbol={depositAssetConfig.symbol}
+                  className="w-4 h-4"
+                />
+                <span>
+                  {currentUserVaultBaseBalanceAfterFees.prettyPrint()}
+                  {" -> "}
+                  {afterInputAmountUserVaultBalance.prettyPrint()}
+                </span>
               </div>
             </div>
           </div>
-          <MarketIcon
-            marketSymbol={depositAssetConfig.symbol}
-            className="w-4 h-4"
-          />
         </div>
       </div>
 
