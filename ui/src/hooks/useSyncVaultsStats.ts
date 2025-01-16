@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  DriftVaults,
   Vault,
   VAULT_SHARES_PRECISION_EXP,
   VaultClient,
@@ -23,7 +22,6 @@ import {
 import { ApyReturnsLookup, VaultStats } from "@/types/vaults";
 import { useEffect, useMemo, useState } from "react";
 import { DEFAULT_OFF_CHAIN_STATS, DEFAULT_PERIOD_APY } from "@/constants/misc";
-import { Program } from "@coral-xyz/anchor";
 import { Connection } from "@solana/web3.js";
 import { getVaultsApyReturns } from "@/server-actions/vaults";
 import { getUiVaultConfig } from "@/lib/utils";
@@ -72,7 +70,7 @@ export type VaultsOnChainDataLookup = Record<
 
 const vaultDataDecoder = (
   buffer: Buffer,
-  vaultProgram: Program<DriftVaults>,
+  vaultProgram: VaultClient["program"],
 ): Vault => {
   const account = vaultProgram.account.vault.coder.accounts.decode(
     "vault",
