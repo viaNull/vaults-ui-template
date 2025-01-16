@@ -77,7 +77,7 @@ We use Vercel KV for caching, mainly for the vault's calculated APY.
 **Cronjobs are only run on the production branch.** Cronjobs are essentially NextJS API routes that are called on a schedule based on `vercel.json`.
 
 1. Add the `CRON_SECRET` to your `.env` file. This should be a random string of characters. This ensures that your cronjobs are protected from being called by anyone. Ensure that this is set in your Vercel environment variables.
-2. Add `NEXT_PUBLIC_RPC_URL` to your `.env` file. This should be the RPC URL of the cluster you are using.
+2. Add `NEXT_PUBLIC_RPC_OVERRIDE` to your `.env` file. This should be the RPC URL of the cluster you are using.
 3. You may edit the cronjobs in `vercel.json` to run on a different schedule, suited to your needs.
 4. Push any changes to the cronjob schedule/API routes to the production branch to ensure the changes are in effect.
 

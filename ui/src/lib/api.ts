@@ -23,10 +23,10 @@ const CLUSTER = "mainnet-beta";
  * Sets up mainnet DriftClient and VaultClient for use in API routes.
  */
 export const setupClients = (authority?: PublicKey) => {
-  const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL;
+  const rpcUrl = process.env.NEXT_PUBLIC_RPC_OVERRIDE;
 
   if (!rpcUrl) {
-    throw new Error("NEXT_PUBLIC_RPC_URL is not set");
+    throw new Error("NEXT_PUBLIC_RPC_OVERRIDE is not set");
   }
 
   const connection = new Connection(rpcUrl, "finalized");
